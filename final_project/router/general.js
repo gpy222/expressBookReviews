@@ -6,46 +6,49 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
+    const username = req.body.username;
+    const password = req.body.password;
+  
+    if (username && password) {
+      if (!isValid(username)) { 
+        users.push({"username":username,"password":password});
+        return res.status(200).json({message: "User successfully registred. Now you can login"});
+      } else {
+        return res.status(404).json({message: "User already exists!"});    
+      }
+    } 
+    return res.status(404).json({message: "Unable to register user."});
+  });
+
+// Promise Code
+const getAllBooks = () => Promise.resolve(books);
+const getByISBN = (isbn) => Promise.resolve(books[isbn]);
+const getByAuthor = (author) => Promise.resolve(Object.values(books).filter((book) => book.author === author));
+const getByTitle = (title) => Promise.resolve(Object.values(books).filter((book) => book.title === title));
+
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books,null,4));
+  getAllBooks()
+  .then(result => res.status(200).send(JSON.stringify(result,null,4)))
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  const isbn = req.params.isbn;
-  const book = books[isbn];
-  res.send(book);
+    getByISBN(req.params.isbn)
+    .then(result => res.status(200).send(JSON.stringify(result,null,4)))
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  const author = req.params.author;
-  const bookKeys = Object.keys(books);
-  let booksByAuthor = [];
-  for (var i = 0; i < bookKeys.length; i++) {
-    if (books[bookKeys[i]]['author'] === author) {
-        booksByAuthor.push(books[bookKeys[i]]);
-    }
-  }
-  res.send(JSON.stringify(booksByAuthor, null,4));
+    getByAuthor(req.params.author)
+    .then(result => res.status(200).send(JSON.stringify(result,null,4)))
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-    const title = req.params.title;
-    const bookKeys = Object.keys(books);
-    let booksWithTitle = [];
-    for (var i = 0; i < bookKeys.length; i++) {
-      if (books[bookKeys[i]]['title'] === title) {
-        booksWithTitle.push(books[bookKeys[i]]);
-      }
-    }
-    res.send(JSON.stringify(booksWithTitle, null,4));
+    getByTitle(req.params.title)
+    .then(result => res.status(200).send(JSON.stringify(result,null,4)))
 });
 
 //  Get book review
