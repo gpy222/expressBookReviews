@@ -52,13 +52,13 @@ const authenticatedUser = (username,password)=>{
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-    const review = req.body.review;
+    const review = req.params.review;
     const isbn = req.params.isbn;
     const user = req.session.authorization.username;
     let reviews = books[isbn]['reviews']
     reviews[user] = {"review":review};
     books[isbn]['reviews'] = reviews;
-    res.send(books[isbn]['reviews'])
+    res.send(`Your Review for the Book with ISBN ${isbn} has been added/updated.`)
 });
 
 regd_users.delete("/auth/review/:isbn", (req, res) => {
